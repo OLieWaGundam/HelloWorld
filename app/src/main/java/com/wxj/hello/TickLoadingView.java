@@ -20,6 +20,7 @@ import android.view.View;
  */
 
 public class TickLoadingView extends View {
+    //develop分支测试
     private static String TAG = "LoadingView";
     private int width, height;
     private Paint mPaint;
