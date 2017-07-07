@@ -24,6 +24,7 @@ public class TickLoadingView extends View {
     private static String TAG = "LoadingView";
     private int width, height;
     private Paint mPaint;
+
     private Path path_circle, path_tick;
 
     // 测量Path 并截取部分的工具
