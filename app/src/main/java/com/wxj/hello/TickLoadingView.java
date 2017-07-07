@@ -25,6 +25,7 @@ public class TickLoadingView extends View {
     private Paint mPaint;
     private Path path_circle, path_tick;
 
+
     // 测量Path 并截取部分的工具
     private PathMeasure mMeasure;
 
