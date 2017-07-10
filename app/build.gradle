@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 25
@@ -34,3 +35,45 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }
+
+// 定义生成文件目录
+def checkStyleReportPath = "${project.rootDir}/reports/"
+
+// 在clean时候，自动删除原先生成报告
+clean.doFirst {
+    delete checkStyleReportPath
+}
+
+task projectCheckStyle(type: Checkstyle) {
+    source 'src'
+    configFile file("${project.rootDir}/config/checkstyle.xml") // 配置样式
+    include '**/*.java'
+    exclude '**/gen/**'
+    classpath = files()
+    ignoreFailures true // 配置是否忽略失败
+
+    // 自定义报告生成路径
+    reports {
+        html {
+            destination "${project.rootDir}/app/build/reports/checkstyle-result.html"
+        }
+        xml {
+            destination "${project.rootDir}/app/build/reports/checkstyle-result.xml"
+        }
+    }
+}
+
+tasks.withType(Checkstyle).each { checkstyleTask ->
+    checkstyleTask.doLast {
+        reports.all { report ->
+            // 检查生成报告中是否有错误
+            def outputFile = report.destination
+            if (outputFile.exists() && outputFile.text.contains("<error ") && !checkstyleTask.ignoreFailures) {
+                throw new GradleException("There were checkstyle errors! For more info check $outputFile")
+            }
+        }
+    }
+}
+
+// preBuild的时候，执行projectCheckStyle任务
+preBuild.dependsOn projectCheckStyle
