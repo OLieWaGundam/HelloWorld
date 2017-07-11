@@ -93,10 +93,10 @@ task findbugs(type: FindBugs) {
         xml.enabled = true
         html.enabled = false
         xml {
-            destination "${project.rootDir}/app/build/reports/findbugs-output.xml"
+            destination "${project.rootDir}/app/build/reports/findbugs.xml"
         }
         html {
-            destination "${project.rootDir}/app/build/reports/findbugs-output.html"
+            destination "${project.rootDir}/app/build/reports/findbugs.html"
         }
     }
 }
