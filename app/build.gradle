@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'checkstyle'
+apply plugin: "findbugs"
 
 android {
     compileSdkVersion 25
@@ -37,14 +38,15 @@ dependencies {
 }
 
 // 定义生成文件目录
-def checkStyleReportPath = "${project.rootDir}/reports/"
+def checkStyleReportPath = "${project.rootDir}/app/build/reports/"
 
 // 在clean时候，自动删除原先生成报告
 clean.doFirst {
     delete checkStyleReportPath
 }
 
-task projectCheckStyle(type: Checkstyle) {
+
+task checkStyle(type: Checkstyle) {
     source 'src'
     configFile file("${project.rootDir}/config/checkstyle.xml") // 配置样式
     include '**/*.java'
@@ -75,5 +77,26 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
     }
 }
 
-// preBuild的时候，执行projectCheckStyle任务
-preBuild.dependsOn projectCheckStyle
+// preBuild的时候，执行projectCheckStyle,和findbug任务
+preBuild .dependsOn checkStyle
+
+
+task findbugs(type: FindBugs) {
+    ignoreFailures = true //有警告错误的时候也是允许构建
+    effort = "default"
+    reportLevel = "high"//报告的级别，Low,Medium,High一般来说我们首先关注的是高级别的报告，再关注低一级别的报告
+    excludeFilter = new File("${project.rootDir}/config/findbugs-filter.xml")//配置文件
+    classes = files("${project.rootDir}/app/build/intermediates/classes")//classe文件夹地址
+    source = fileTree('src/main/java/')//源代码文件地址
+    classpath = files()
+    reports {
+        xml.enabled = true
+        html.enabled = false
+        xml {
+            destination "${project.rootDir}/app/build/reports/findbugs-output.xml"
+        }
+        html {
+            destination "${project.rootDir}/app/build/reports/findbugs-output.html"
+        }
+    }
+}
