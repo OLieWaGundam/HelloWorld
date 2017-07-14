@@ -77,9 +77,6 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
     }
 }
 
-// preBuild的时候，执行projectCheckStyle,和findbug任务
-preBuild .dependsOn checkStyle
-
 
 task findbugs(type: FindBugs) {
     ignoreFailures = true //有警告错误的时候也是允许构建
